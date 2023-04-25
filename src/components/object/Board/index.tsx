@@ -1,24 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
+
+import { pos, poswithstate } from "./types";
 import Cell from "../Cell";
-import { useGlobalContext } from "../../../context/MyContext";
+import { data } from "../../Config";
+import { useGlobalContext } from "../../../contexts/AppContext";
 
 import "./index.scss";
-import { data } from "../../Config";
-
-interface pos {
-  x: number;
-  y: number;
-}
-
-interface poswithstate extends pos {
-  state: boolean;
-}
 
 const Board = () => {
   const posX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const posY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const vh = window.innerHeight / 100;
-  console.log(vh);
 
   const [globalMousePos, setGlobalMousePos] = useState<pos>({ x: 0, y: 0 });
   const [localMousePos, setLocalMousePos] = useState<pos>({ x: 0, y: 0 });

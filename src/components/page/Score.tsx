@@ -1,6 +1,7 @@
 import React from "react";
-import { useGlobalContext } from "./../../context/MyContext";
 import { Link } from "react-router-dom";
+
+import { useGlobalContext } from "../../contexts/AppContext";
 
 const Score = () => {
   const { score } = useGlobalContext();
