@@ -1,0 +1,11 @@
+.board-container {
+  outline: solid 3px rgb(185, 158, 0);
+  width: 50vh;
+  height: 50vh;
+  margin: 10px;
+  position: relative;
+}
+
+.board-container:hover {
+  outline: solid 3px purple;
+}
