@@ -1,30 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import { Props } from "./types";
-import { data, size, Hit, Miss, MissSmall } from "../../Config";
+import { size, Hit, Miss, MissSmall } from "../../Config";
 import { useGlobalContext } from "../../../contexts/AppContext";
 
 import "./index.scss";
 
 const Cell = (props: Props) => {
-  const { x, y, state } = props;
+  const { x, y, state, isHuman } = props;
 
   const [chosen, mdChosen] = useState(0);
   const [marked, setMarked] = useState(false);
 
   const {
-    shooted,
-    setShooted,
+    humanShooted,
+    comShooted,
+    setHumanShooted,
+    setComShooted,
     reset,
-    setReset,
-    score,
-    setScore,
     mode,
-    secretCnt,
+    humanPositions,
+    comPositions,
   } = useGlobalContext();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     mdChosen(0);
@@ -34,27 +31,32 @@ const Cell = (props: Props) => {
   const checkShootOrNot = (x: number, y: number) => {
     if (!marked) {
       mdChosen(2);
-      setScore(score - 1);
-      data.layout.map((item, i) => {
-        return item.positions.map((pos) => {
-          if (pos[0] === x && pos[1] === y) {
-            mdChosen(1);
-            setScore(score);
-            let std: number[] = shooted;
-            if (std[i] < size[i]) std[i]++;
-            setShooted([...std]);
-            setMarked(true);
-            let j,
-              sum = 0;
-            for (j = 0; j < 5; j++) sum += std[j];
-            if (sum === secretCnt) {
-              setReset(!reset);
-              navigate("/score");
+      if (isHuman)
+        humanPositions.map((item, i) => {
+          return item.map((pos) => {
+            if (pos.x === x && pos.y === y) {
+              mdChosen(1);
+              let std: number[] = humanShooted;
+              if (std[i] < size[i]) std[i]++;
+              setHumanShooted([...std]);
+              setMarked(true);
             }
-          }
-          return true;
+            return true;
+          });
         });
-      });
+      else
+        comPositions.map((item, i) => {
+          return item.map((pos) => {
+            if (pos.x === x && pos.y === y) {
+              mdChosen(1);
+              let std: number[] = comShooted;
+              if (std[i] < size[i]) std[i]++;
+              setComShooted([...std]);
+              setMarked(true);
+            }
+            return true;
+          });
+        });
     }
   };
 

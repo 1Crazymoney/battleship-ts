@@ -1,14 +1,27 @@
+import { pos } from "../components/object/Board/types";
 export interface GlobalContent {
-  shooted: number[];
-  setShooted: (c: number[]) => void;
   reset: boolean;
   setReset: (c: boolean) => void;
-  score: number;
-  setScore: (c: number) => void;
-  selected: number;
-  setSelected: (c: number) => void;
   mode: number;
   setMode: (c: number) => void;
-  secretCnt: number;
-  setSecretCnt: (c: number) => void;
+  winner: number;
+  setWinner: (c: number) => void;
+
+  humanPositions: pos[][];
+  setHumanPositions: (c: pos[][]) => void;
+  humanShooted: number[];
+  setHumanShooted: (c: number[]) => void;
+  humanSelected: number;
+  setHumanSelected: (c: number) => void;
+  humanSecretCnt: number;
+  setHumanSecretCnt: (c: number) => void;
+
+  comPositions: pos[][];
+  setComPositions: (c: pos[][]) => void;
+  comShooted: number[];
+  setComShooted: (c: number[]) => void;
+  comSelected: number;
+  setComSelected: (c: number) => void;
+  comSecretCnt: number;
+  setComSecretCnt: (c: number) => void;
 }

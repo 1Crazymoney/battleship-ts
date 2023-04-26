@@ -103,9 +103,9 @@ const dirSum = (i: number, j: number, arr: number[][]) => {
   return c;
 };
 
-const randomPlace = (ship: number[][], n: number) => {
+const randomPlace = (ship: pos[], n: number) => {
   ship = [];
-  for (let i = 0; i < size[n]; i++) ship[i] = [];
+  // for (let i = 0; i < size[n]; i++) ship[i] = [];
   let vertical, xMax, yMax, i, originX, originY;
   const row = 10;
   vertical = Math.random() > 0.5;
@@ -128,12 +128,12 @@ const randomPlace = (ship: number[][], n: number) => {
 
   if (vertical) {
     for (i = 0; i < size[n]; i++) {
-      ship[i] = [originX, originY + i];
+      ship[i] = { x: originX, y: originY + i };
       flag[originX][originY + i] = 1;
     }
   } else {
     for (i = 0; i < size[n]; i++) {
-      ship[i] = [originX + i, originY];
+      ship[i] = { x: originX + i, y: originY };
       flag[originX + i][originY] = 1;
     }
   }
@@ -141,20 +141,21 @@ const randomPlace = (ship: number[][], n: number) => {
 };
 
 const init = () => {
-  let i, j;
+  let i,
+    j,
+    positions: pos[][] = [];
   for (i = 0; i < 5; i++) std[i] = 0;
   for (i = 0; i < 10; i++) flag[i] = [];
-  ships = [];
-  for (i = 0; i < cnt; i++) ships[i] = [];
+  // ships = [];
+  // for (i = 0; i < cnt; i++) ships[i] = [];
   do {
     for (i = 0; i < 10; i++) for (j = 0; j < 10; j++) flag[i][j] = 0;
-
     for (let i = 0; i < cnt; i++) {
-      ships[i] = randomPlace(ships[i], i);
-      data.layout[i].positions = ships[i];
+      positions[i] = randomPlace(positions[i], i);
+      //  positions[i] = ships[i];
     }
   } while (!check());
-  imgLoad();
+  return positions;
 };
 
 const dirSumwithDesign = (
@@ -218,4 +219,5 @@ export {
   shipsList,
   dirSumwithDesign,
   init,
+  imgLoad,
 };

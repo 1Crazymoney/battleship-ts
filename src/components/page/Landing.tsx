@@ -7,7 +7,7 @@ const Landing = () => {
       <div>
         <span>Battle Ship</span>
         <br />
-        <Link to="/game">Let's play game</Link>
+        <Link to="/game">Let's play 1player game</Link>
       </div>
     </div>
   );

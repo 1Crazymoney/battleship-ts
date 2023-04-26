@@ -6,3 +6,7 @@ export interface pos {
 export interface poswithstate extends pos {
   state: boolean;
 }
+
+export interface Props {
+  isHuman: boolean;
+}

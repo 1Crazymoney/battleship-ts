@@ -4,12 +4,12 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.css";
 
-import { init } from "./components/Config";
+import { imgLoad } from "./components/Config";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-init();
+imgLoad();
 root.render(
   <React.StrictMode>
     <App />

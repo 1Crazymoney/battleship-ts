@@ -7,29 +7,46 @@ import Score from "./components/page/Score";
 import { MyContext } from "./contexts/AppContext";
 import "./App.scss";
 
+import { pos } from "./components/object/Board/types";
+
 function App() {
-  const [shooted, setShooted] = useState<number[]>([0, 0, 0, 0, 0]);
   const [reset, setReset] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(100);
-  const [selected, setSelected] = useState<number>(0);
   const [mode, setMode] = useState<number>(0);
-  const [secretCnt, setSecretCnt] = useState<number>(17);
+  const [winner, setWinner] = useState<number>(0);
+  const [humanShooted, setHumanShooted] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [comShooted, setComShooted] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [humanSelected, setHumanSelected] = useState<number>(0);
+  const [comSelected, setComSelected] = useState<number>(0);
+  const [humanSecretCnt, setHumanSecretCnt] = useState<number>(17);
+  const [comSecretCnt, setComSecretCnt] = useState<number>(17);
+  const [humanPositions, setHumanPositions] = useState<pos[][]>([]);
+  const [comPositions, setComPositions] = useState<pos[][]>([]);
 
   return (
     <MyContext.Provider
       value={{
-        shooted,
-        setShooted,
         reset,
         setReset,
-        score,
-        setScore,
-        selected,
-        setSelected,
         mode,
         setMode,
-        secretCnt,
-        setSecretCnt,
+        winner,
+        setWinner,
+        humanShooted,
+        setHumanShooted,
+        comShooted,
+        setComShooted,
+        humanSelected,
+        setHumanSelected,
+        comSelected,
+        setComSelected,
+        humanSecretCnt,
+        setHumanSecretCnt,
+        comSecretCnt,
+        setComSecretCnt,
+        humanPositions,
+        setHumanPositions,
+        comPositions,
+        setComPositions,
       }}
     >
       <Router>

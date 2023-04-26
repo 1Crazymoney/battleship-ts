@@ -4,13 +4,20 @@ import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../contexts/AppContext";
 
 const Score = () => {
-  const { score } = useGlobalContext();
+  const { reset, setReset, winner, setHumanShooted, setComShooted } =
+    useGlobalContext();
+
+  const initGame = () => {
+    setHumanShooted([0, 0, 0, 0, 0]);
+    setComShooted([0, 0, 0, 0, 0]);
+    setReset(!reset);
+  };
   return (
     <div className="d-flex justify-content-center mt-5">
       <div>
-        <span>Your Score is {score}...</span>
+        <span>{winner === 1 ? "You win!" : "You lost!"}</span>
         <br />
-        <button>
+        <button onClick={() => initGame()}>
           <Link to="/">go home</Link>
         </button>
       </div>

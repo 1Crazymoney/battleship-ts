@@ -1,13 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import Cell from "../Cell";
-import { data, posX, posY, size, dirSumwithDesign } from "../../Config";
+import {
+  posX,
+  posY,
+  size,
+  dirSumwithDesign,
+  init,
+  // cnt,
+} from "../../Config";
 import { useGlobalContext } from "../../../contexts/AppContext";
 
-import { pos, poswithstate } from "./types";
+import { pos, poswithstate, Props } from "./types";
 import "./index.scss";
 
-const Board = () => {
+const Board = (props: Props) => {
+  const { isHuman } = props;
   const vh = window.innerHeight / 100;
 
   const [globalMousePos, setGlobalMousePos] = useState<pos>({ x: 0, y: 0 });
@@ -16,12 +24,22 @@ const Board = () => {
   const [block, setBlock] = useState<poswithstate[]>([]);
   const [dFlag, setDFlag] = useState<number[]>([0, 0, 0, 0, 0, 0]);
   const [dir, setDir] = useState<boolean>(false);
-  const { selected, mode, reset, secretCnt, setSecretCnt } = useGlobalContext();
+  const {
+    mode,
+    reset,
+    humanSelected,
+    humanSecretCnt,
+    setHumanSecretCnt,
+    humanPositions,
+    setHumanPositions,
+    setComPositions,
+  } = useGlobalContext();
 
   const board = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleMouseMoveOnBoard = (event: any) => {
+      if (!isHuman) return;
       setGlobalMousePos({
         x: event.clientX,
         y: event.clientY,
@@ -40,7 +58,7 @@ const Board = () => {
       window.removeEventListener("mousemove", handleMouseMoveOnBoard);
       window.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [dir]);
+  }, [dir, isHuman]);
 
   useEffect(() => {
     setGlobalMousePos({ x: 0, y: 0 });
@@ -49,17 +67,18 @@ const Board = () => {
     setSecretBlock([]);
     setDir(false);
     setDFlag([0, 0, 0, 0, 0, 0]);
-  }, [reset]);
+    if (!isHuman) setComPositions(init());
+  }, [reset, isHuman, setComPositions]);
 
   useEffect(() => {
-    if (mode === 1) {
-      setSecretCnt(0);
-      let i;
-      for (i = 0; i < 5; i++) data.layout[i].positions = [];
+    if (isHuman && mode === 1) {
+      setHumanSecretCnt(0);
+      setHumanPositions([]);
     }
-  }, [mode, setSecretCnt]);
+  }, [isHuman, mode, setHumanPositions, setHumanSecretCnt]);
 
-  const handleMouseMove = () => {
+  const handleMouseMove = useCallback(() => {
+    if (!isHuman) return;
     const offsetLeft = board.current?.offsetLeft || 0;
     const offsetTop = board.current?.offsetTop || 0;
 
@@ -68,10 +87,11 @@ const Board = () => {
       y: globalMousePos.y - offsetTop,
     });
 
-    if (mode === 1) {
+    if (isHuman && mode === 1) {
       let startX = Math.floor(localMousePos.x / (5 * vh)),
         startY = Math.floor(localMousePos.y / (5 * vh)),
-        i;
+        i,
+        selected = humanSelected;
 
       if (!dir) startX -= Math.floor(size[selected] / 2);
       else startY -= Math.floor(size[selected] / 2);
@@ -93,31 +113,45 @@ const Board = () => {
         });
       setBlock(b);
     }
-  };
+  }, [
+    dFlag,
+    dir,
+    globalMousePos.x,
+    globalMousePos.y,
+    humanSelected,
+    isHuman,
+    localMousePos.x,
+    localMousePos.y,
+    mode,
+    secretBlock,
+    vh,
+  ]);
 
   useEffect(() => {
     handleMouseMove();
-  }, [dir]);
+  }, [dir, handleMouseMove]);
 
   const handleClickOnBoard = () => {
+    if (!isHuman) return;
     if (mode === 1) {
       if (block[0].state === true) {
         let tmp: pos[] = secretBlock;
         tmp.push(...block);
         setSecretBlock(tmp);
 
-        let t: number[] = dFlag;
+        let t: number[] = dFlag,
+          selected = humanSelected;
         t[selected] = 1;
         setDFlag(t);
 
-        data.layout[selected].positions = block.map((item) => {
-          return [item.x, item.y];
-        });
+        let tt: pos[][] = humanPositions;
+        tt[selected] = block;
 
-        setSecretCnt(secretCnt + size[selected]);
+        setHumanSecretCnt(humanSecretCnt + size[selected]);
       }
     }
   };
+
   return (
     <div>
       <div
@@ -134,16 +168,58 @@ const Board = () => {
                 block.filter((e) => e.x === x && e.y === y).length > 0
               ) {
                 if (block[0].state === true)
-                  return <Cell x={x} y={y} key={x * 10 + y} state={2} />;
-                else return <Cell x={x} y={y} key={x * 10 + y} state={3} />;
+                  return (
+                    <Cell
+                      x={x}
+                      y={y}
+                      key={x * 10 + y}
+                      state={2}
+                      isHuman={isHuman}
+                    />
+                  );
+                else
+                  return (
+                    <Cell
+                      x={x}
+                      y={y}
+                      key={x * 10 + y}
+                      state={3}
+                      isHuman={isHuman}
+                    />
+                  );
               } else if (
                 secretBlock &&
                 secretBlock.filter((e) => e.x === x && e.y === y).length > 0
               )
-                return <Cell x={x} y={y} key={x * 10 + y} state={1} />;
-              else return <Cell x={x} y={y} key={x * 10 + y} state={0} />;
+                return (
+                  <Cell
+                    x={x}
+                    y={y}
+                    key={x * 10 + y}
+                    state={1}
+                    isHuman={isHuman}
+                  />
+                );
+              else
+                return (
+                  <Cell
+                    x={x}
+                    y={y}
+                    key={x * 10 + y}
+                    state={0}
+                    isHuman={isHuman}
+                  />
+                );
             } else {
-              return <Cell x={x} y={y} key={x * 10 + y} state={0} />;
+              return (
+                <Cell
+                  x={x}
+                  y={y}
+                  key={x * 10 + y}
+                  state={0}
+                  isHuman={isHuman}
+                />
+              );
             }
           });
         })}

@@ -1,119 +1,100 @@
 import React, { useEffect } from "react";
-
-import { MissSmall, HitSmall, shipsList } from "../../Config";
+import { useNavigate } from "react-router-dom";
 
 import { useGlobalContext } from "../../../contexts/AppContext";
-import { size, init, cnt } from "../../Config";
 
-import Board from "../Board";
+import Player from "../Player";
 
 import "./index.scss";
 
-const LeftPanel = () => {
-  const { shooted, selected, setSelected, mode } = useGlobalContext();
-  const data = [0, 1, 2, 3, 4];
-
-  const handleSelect = (s: number) => {
-    setSelected(s);
-  };
-
-  let sign: JSX.Element[][] = [],
-    ship: JSX.Element[][] = [];
-  let i: number, j: number;
-
-  for (i = 0; i < cnt; i++) {
-    sign[i] = [];
-    for (j = 0; j < shooted[i]; j++)
-      sign[i].push(
-        <img src={HitSmall} alt="Hit small.png" key={j} className="img-cell" />
-      );
-    for (j = 0; j < size[i] - shooted[i]; j++)
-      sign[i].push(
-        <img
-          src={MissSmall}
-          alt="Miss small.png"
-          key={j + shooted[i]}
-          className="img-cell"
-        />
-      );
-    ship[i] = [];
-    ship[i].push(
-      <img
-        className={
-          "" + selected !== `${i}` && mode
-            ? "panel-img design-mode"
-            : "panel-img"
-        }
-        src={shipsList[i]}
-        alt={"png"}
-        key={i}
-      />
-    );
-  }
-  return (
-    <div>
-      {data.map((i) => {
-        return (
-          <div className="w-80vh h-8vh">
-            <div onClick={() => handleSelect(i)} className="display-inline">
-              {ship[i]}
-            </div>
-            {sign[i]}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
 const Panel = () => {
-  const { setShooted, setReset, reset, setScore, mode, setMode, setSecretCnt } =
-    useGlobalContext();
+  const {
+    reset,
+    setReset,
+    mode,
+    setMode,
+    setWinner,
+    humanShooted,
+    comShooted,
+    setHumanShooted,
+    setComShooted,
+    humanSecretCnt,
+    comSecretCnt,
+    setHumanSecretCnt,
+    setComSecretCnt,
+  } = useGlobalContext();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setShooted([0, 0, 0, 0, 0]);
-    setScore(100);
-  }, [reset, setShooted, setScore, setSecretCnt]);
+    setHumanShooted([0, 0, 0, 0, 0]);
+    setComShooted([0, 0, 0, 0, 0]);
+    setComSecretCnt(17);
+  }, [reset, setHumanShooted, setComShooted, setComSecretCnt]);
+
+  useEffect(() => {
+    let humanSum = 0,
+      comSum = 0;
+    humanShooted.forEach((item) => (humanSum += item));
+    comShooted.forEach((item) => (comSum += item));
+    if (
+      (humanSecretCnt !== 0 && humanSum === humanSecretCnt) ||
+      comSum === comSecretCnt
+    ) {
+      console.log("finish");
+      if (humanSum === humanSecretCnt) setWinner(1);
+      else setWinner(2);
+      setReset(!reset);
+      navigate("/score");
+    }
+  }, [
+    humanShooted,
+    comShooted,
+    navigate,
+    humanSecretCnt,
+    comSecretCnt,
+    setWinner,
+    setReset,
+    reset,
+  ]);
   return (
-    <div className="d-flex justify-content-around mt-10vh">
-      <div>
-        <div className="d-flex flex-start">
-          <button
-            className="panel-btn"
-            onClick={() => {
-              setReset(!reset);
-              setMode(0);
-              setSecretCnt(17);
-              init();
-            }}
-          >
-            reset
-          </button>
+    <div className="d-flex flex-column justify-content-between mt-10vh">
+      <div className="d-flex justify-content-center">
+        <button
+          className="panel-btn"
+          onClick={() => {
+            setReset(!reset);
+            setMode(0);
+            setHumanSecretCnt(0);
+            setComSecretCnt(17);
+          }}
+        >
+          reset
+        </button>
+        <button
+          className="ms-2 panel-btn"
+          onClick={() => {
+            setReset(!reset);
+            setMode(1);
+          }}
+        >
+          design
+        </button>
+        {mode === 1 && (
           <button
             className="ms-2 panel-btn"
             onClick={() => {
               setReset(!reset);
-              setMode(1);
+              setMode(0);
             }}
           >
-            design
+            start
           </button>
-          {mode === 1 && (
-            <button
-              className="ms-2 panel-btn"
-              onClick={() => {
-                setReset(!reset);
-                setMode(0);
-              }}
-            >
-              start
-            </button>
-          )}
-        </div>
-        <LeftPanel />
+        )}
       </div>
-      <div>
-        <Board />
+      <div className="d-flex">
+        <Player isHuman={true} />
+        <Player isHuman={false} />
       </div>
     </div>
   );
