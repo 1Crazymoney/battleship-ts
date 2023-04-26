@@ -2,13 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Props } from "./types";
-
-import { data, size } from "../../Config";
+import { data, size, Hit, Miss, MissSmall } from "../../Config";
 import { useGlobalContext } from "../../../contexts/AppContext";
-
-import Hit from "../../../assets/Hit.png";
-import Miss from "../../../assets/Miss.png";
-import MissSmall from "../../../assets/Miss small.png";
 
 import "./index.scss";
 

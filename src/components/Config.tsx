@@ -1,3 +1,19 @@
+import MissSmall from "../assets/Miss small.png";
+import HitSmall from "../assets/Hit small.png";
+import Hit from "../assets/Hit.png";
+import Miss from "../assets/Miss.png";
+import { pos } from "./object/Board/types";
+
+let shipsList: string[] = [];
+
+const importAll = (r: any) => {
+  return r.keys().map(r);
+};
+
+const imgLoad = () => {
+  shipsList = importAll(require.context("../assets/ships/", false, /\.(png)$/));
+};
+
 let ships: number[][][] = [];
 let flag: number[][] = [];
 let std: number[] = [];
@@ -138,6 +154,68 @@ const init = () => {
       data.layout[i].positions = ships[i];
     }
   } while (!check());
+  imgLoad();
 };
 
-export { data, init, flag, std, size };
+const dirSumwithDesign = (
+  cur: pos,
+  cb: pos[],
+  df: number[],
+  selected: number
+) => {
+  let c = 0;
+  if (cur.x > 0)
+    c += Number(
+      cb.filter((e) => e.x === cur.x - 1 && e.y === cur.y).length > 0
+    );
+  if (cur.x < 9)
+    c += Number(
+      cb.filter((e) => e.x === cur.x + 1 && e.y === cur.y).length > 0
+    );
+  if (cur.y > 0)
+    c += Number(
+      cb.filter((e) => e.x === cur.x && e.y === cur.y - 1).length > 0
+    );
+  if (cur.y < 9)
+    c += Number(
+      cb.filter((e) => e.x === cur.x && e.y === cur.y + 1).length > 0
+    );
+  if (cur.x > 0 && cur.y > 0)
+    c += Number(
+      cb.filter((e) => e.x === cur.x - 1 && e.y === cur.y - 1).length > 0
+    );
+  if (cur.x < 9 && cur.y > 0)
+    c += Number(
+      cb.filter((e) => e.x === cur.x + 1 && e.y === cur.y - 1).length > 0
+    );
+  if (cur.x > 0 && cur.y < 9)
+    c += Number(
+      cb.filter((e) => e.x === cur.x - 1 && e.y === cur.y + 1).length > 0
+    );
+  if (cur.x < 9 && cur.y < 9)
+    c += Number(
+      cb.filter((e) => e.x === cur.x + 1 && e.y === cur.y + 1).length > 0
+    );
+
+  if (cur.x < 0 || cur.x > 9 || cur.y < 0 || cur.y > 9 || df[selected] >= 1)
+    c = 100;
+  return c;
+};
+
+const posX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const posY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+export {
+  MissSmall,
+  HitSmall,
+  Hit,
+  Miss,
+  size,
+  cnt,
+  posX,
+  posY,
+  data,
+  shipsList,
+  dirSumwithDesign,
+  init,
+};

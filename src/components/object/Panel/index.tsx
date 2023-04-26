@@ -1,70 +1,85 @@
 import React, { useEffect } from "react";
 
-import Submarine from "../../../assets/Submarine Shape.png";
-import Aircraft from "../../../assets/Aircraft Shape.png";
-import Battle from "../../../assets/Battleship Shape.png";
-import Carrier from "../../../assets/Carrier Shape.png";
-import Cruiser from "../../../assets/Cruiser Shape.png";
-import MissSmall from "../../../assets/Miss small.png";
-import HitSmall from "../../../assets/Hit small.png";
+import { MissSmall, HitSmall, shipsList } from "../../Config";
 
 import { useGlobalContext } from "../../../contexts/AppContext";
-import { size, init } from "../../Config";
+import { size, init, cnt } from "../../Config";
 
 import Board from "../Board";
 
 import "./index.scss";
 
-const Panel = () => {
-  const {
-    shooted,
-    setShooted,
-    setReset,
-    reset,
-    setScore,
-    selected,
-    setSelected,
-    mode,
-    setMode,
-    setSecretCnt,
-  } = useGlobalContext();
+const LeftPanel = () => {
+  const { shooted, selected, setSelected, mode } = useGlobalContext();
+  const data = [0, 1, 2, 3, 4];
 
-  let hs1 = [],
-    hs2 = [],
-    hs3 = [],
-    hs4 = [],
-    hs5 = [],
-    i;
-  for (i = 0; i < shooted[0]; i++)
-    hs1.push(<img src={HitSmall} alt="Hit small.png" key={i} />);
-  for (i = 0; i < size[0] - shooted[0]; i++)
-    hs1.push(<img src={MissSmall} alt="Miss small.png" key={i + shooted[0]} />);
-  for (i = 0; i < shooted[1]; i++)
-    hs2.push(<img src={HitSmall} alt="Hit small.png" key={i} />);
-  for (i = 0; i < size[1] - shooted[1]; i++)
-    hs2.push(<img src={MissSmall} alt="Miss small.png" key={i + shooted[1]} />);
-  for (i = 0; i < shooted[2]; i++)
-    hs3.push(<img src={HitSmall} alt="Hit small.png" key={i} />);
-  for (i = 0; i < size[2] - shooted[2]; i++)
-    hs3.push(<img src={MissSmall} alt="Miss small.png" key={i + shooted[2]} />);
-  for (i = 0; i < shooted[3]; i++)
-    hs4.push(<img src={HitSmall} alt="Hit small.png" key={i} />);
-  for (i = 0; i < size[3] - shooted[3]; i++)
-    hs4.push(<img src={MissSmall} alt="Miss small.png" key={i + shooted[3]} />);
-  for (i = 0; i < shooted[4]; i++)
-    hs5.push(<img src={HitSmall} alt="Hit small.png" key={i} />);
-  for (i = 0; i < size[4] - shooted[4]; i++)
-    hs5.push(<img src={MissSmall} alt="Miss small.png" key={i + shooted[4]} />);
+  const handleSelect = (s: number) => {
+    setSelected(s);
+  };
+
+  let sign: JSX.Element[][] = [],
+    ship: JSX.Element[][] = [];
+  let i: number, j: number;
+
+  for (i = 0; i < cnt; i++) {
+    sign[i] = [];
+    for (j = 0; j < shooted[i]; j++)
+      sign[i].push(
+        <img src={HitSmall} alt="Hit small.png" key={j} className="img-cell" />
+      );
+    for (j = 0; j < size[i] - shooted[i]; j++)
+      sign[i].push(
+        <img
+          src={MissSmall}
+          alt="Miss small.png"
+          key={j + shooted[i]}
+          className="img-cell"
+        />
+      );
+    ship[i] = [];
+    ship[i].push(
+      <img
+        className={
+          "" + selected !== `${i}` && mode
+            ? "panel-img design-mode"
+            : "panel-img"
+        }
+        src={shipsList[i]}
+        alt={"png"}
+        key={i}
+      />
+    );
+  }
+  return (
+    <div>
+      {data.map((i) => {
+        return (
+          <div className="w-80vh h-8vh">
+            <div onClick={() => handleSelect(i)} className="display-inline">
+              {ship[i]}
+            </div>
+            {sign[i]}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const Panel = () => {
+  const { setShooted, setReset, reset, setScore, mode, setMode, setSecretCnt } =
+    useGlobalContext();
 
   useEffect(() => {
     setShooted([0, 0, 0, 0, 0]);
     setScore(100);
   }, [reset, setShooted, setScore, setSecretCnt]);
   return (
-    <div className="d-flex mt-5 justify-content-around">
+    <div className="d-flex justify-content-around mt-10vh">
       <div>
         <div className="d-flex flex-start">
           <button
+            className="panel-btn"
             onClick={() => {
               setReset(!reset);
               setMode(0);
@@ -75,7 +90,7 @@ const Panel = () => {
             reset
           </button>
           <button
-            className="ms-2"
+            className="ms-2 panel-btn"
             onClick={() => {
               setReset(!reset);
               setMode(1);
@@ -85,7 +100,7 @@ const Panel = () => {
           </button>
           {mode === 1 && (
             <button
-              className="ms-2"
+              className="ms-2 panel-btn"
               onClick={() => {
                 setReset(!reset);
                 setMode(0);
@@ -95,71 +110,7 @@ const Panel = () => {
             </button>
           )}
         </div>
-        <div className="w-80vh h-8vh">
-          <img
-            className={
-              "" + selected !== "0" && mode
-                ? "panel-img design-mode"
-                : "panel-img"
-            }
-            src={Aircraft}
-            alt="Aircraft.png"
-            onClick={() => setSelected(0)}
-          />
-          {hs1}
-        </div>
-        <div className="w-80vh h-8vh">
-          <img
-            className={
-              "" + selected !== "1" && mode
-                ? "panel-img design-mode"
-                : "panel-img"
-            }
-            src={Battle}
-            alt="Battle.png"
-            onClick={() => setSelected(1)}
-          />
-          {hs2}
-        </div>
-        <div className="w-80vh h-8vh">
-          <img
-            className={
-              "" + selected !== "2" && mode
-                ? "panel-img design-mode"
-                : "panel-img"
-            }
-            src={Cruiser}
-            alt="Cruiser.png"
-            onClick={() => setSelected(2)}
-          />
-          {hs3}
-        </div>
-        <div className="w-80vh h-8vh">
-          <img
-            className={
-              "" + selected !== "3" && mode
-                ? "panel-img design-mode"
-                : "panel-img"
-            }
-            src={Submarine}
-            alt="Submarine.png"
-            onClick={() => setSelected(3)}
-          />
-          {hs4}
-        </div>
-        <div className="w-80vh h-8vh">
-          <img
-            className={
-              "" + selected !== "4" && mode
-                ? "panel-img design-mode"
-                : "panel-img"
-            }
-            src={Carrier}
-            alt="Carrier.png"
-            onClick={() => setSelected(4)}
-          />
-          {hs5}
-        </div>
+        <LeftPanel />
       </div>
       <div>
         <Board />
