@@ -10,7 +10,10 @@ const Player = (props: Props) => {
 
   return (
     <div className="d-flex flex-start mt-10vh">
-      <Notify isHuman={isHuman} />
+      <div>
+        <span>{isHuman ? "Human:" : "Com:"}</span>
+        <Notify isHuman={isHuman} />
+      </div>
       <Board isHuman={isHuman} />
     </div>
   );

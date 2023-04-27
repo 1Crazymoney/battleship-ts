@@ -15,9 +15,9 @@ const Score = () => {
   return (
     <div className="d-flex justify-content-center mt-5">
       <div>
-        <span>{winner === 1 ? "You win!" : "You lost!"}</span>
+        <span>{winner === 0 ? "You win!" : "You lost!"}</span>
         <br />
-        <button onClick={() => initGame()}>
+        <button onClick={initGame}>
           <Link to="/">go home</Link>
         </button>
       </div>

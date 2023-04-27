@@ -1,14 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import Cell from "../Cell";
-import {
-  posX,
-  posY,
-  size,
-  dirSumwithDesign,
-  init,
-  // cnt,
-} from "../../Config";
+import { size, dirSumwithDesign, init } from "../../Config";
 import { useGlobalContext } from "../../../contexts/AppContext";
 
 import { pos, poswithstate, Props } from "./types";
@@ -17,6 +10,7 @@ import "./index.scss";
 const Board = (props: Props) => {
   const { isHuman } = props;
   const vh = window.innerHeight / 100;
+  const board = useRef<HTMLDivElement | null>(null);
 
   const [globalMousePos, setGlobalMousePos] = useState<pos>({ x: 0, y: 0 });
   const [localMousePos, setLocalMousePos] = useState<pos>({ x: 0, y: 0 });
@@ -27,6 +21,8 @@ const Board = (props: Props) => {
   const {
     mode,
     reset,
+    turn,
+    map,
     humanSelected,
     humanSecretCnt,
     setHumanSecretCnt,
@@ -35,9 +31,8 @@ const Board = (props: Props) => {
     setComPositions,
   } = useGlobalContext();
 
-  const board = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
+    ////////// Direct Change
     const handleMouseMoveOnBoard = (event: any) => {
       if (!isHuman) return;
       setGlobalMousePos({
@@ -61,6 +56,7 @@ const Board = (props: Props) => {
   }, [dir, isHuman]);
 
   useEffect(() => {
+    ////////// Reset Change
     setGlobalMousePos({ x: 0, y: 0 });
     setLocalMousePos({ x: 0, y: 0 });
     setBlock([]);
@@ -71,13 +67,15 @@ const Board = (props: Props) => {
   }, [reset, isHuman, setComPositions]);
 
   useEffect(() => {
+    ////////// Mode Change
     if (isHuman && mode === 1) {
       setHumanSecretCnt(0);
       setHumanPositions([]);
     }
-  }, [isHuman, mode, setHumanPositions, setHumanSecretCnt]);
+  }, [mode, isHuman, setHumanPositions, setHumanSecretCnt]);
 
   const handleMouseMove = useCallback(() => {
+    ////////// Mouse move on Board
     if (!isHuman) return;
     const offsetLeft = board.current?.offsetLeft || 0;
     const offsetTop = board.current?.offsetTop || 0;
@@ -132,6 +130,7 @@ const Board = (props: Props) => {
   }, [dir, handleMouseMove]);
 
   const handleClickOnBoard = () => {
+    ////////// Set Design
     if (!isHuman) return;
     if (mode === 1) {
       if (block[0].state === true) {
@@ -146,11 +145,116 @@ const Board = (props: Props) => {
 
         let tt: pos[][] = humanPositions;
         tt[selected] = block;
+        ////////////////////////////////////////////////////////very Curious!
+        // console.log(tt, humanPositions);
 
         setHumanSecretCnt(humanSecretCnt + size[selected]);
       }
     }
   };
+
+  ////////// Cells
+  let cells: JSX.Element[] = [],
+    x: number,
+    y: number;
+  const inputRefs = React.useRef<HTMLDivElement[]>([]);
+  for (x = 0; x < 10; x++)
+    for (y = 0; y < 10; y++) {
+      if (mode) {
+        if (
+          block &&
+          // eslint-disable-next-line no-loop-func
+          block.filter((e) => e.x === x && e.y === y).length > 0
+        ) {
+          if (inputRefs.current && block[0].state === true)
+            cells.push(
+              <Cell
+                x={x}
+                y={y}
+                key={x * 10 + y}
+                state={2}
+                isHuman={isHuman}
+                // eslint-disable-next-line no-loop-func
+                ref={(el) => {
+                  if (el) inputRefs.current.push(el);
+                }}
+              />
+            );
+          else
+            cells.push(
+              <Cell
+                x={x}
+                y={y}
+                key={x * 10 + y}
+                state={3}
+                isHuman={isHuman}
+                // eslint-disable-next-line no-loop-func
+                ref={(el) => {
+                  if (el) inputRefs.current.push(el);
+                }}
+              />
+            );
+        } else if (
+          secretBlock &&
+          // eslint-disable-next-line no-loop-func
+          secretBlock.filter((e) => e.x === x && e.y === y).length > 0
+        )
+          cells.push(
+            <Cell
+              x={x}
+              y={y}
+              key={x * 10 + y}
+              state={1}
+              isHuman={isHuman}
+              // eslint-disable-next-line no-loop-func
+              ref={(el) => {
+                if (el) inputRefs.current.push(el);
+              }}
+            />
+          );
+        else
+          cells.push(
+            <Cell
+              x={x}
+              y={y}
+              key={x * 10 + y}
+              state={0}
+              isHuman={isHuman}
+              // eslint-disable-next-line no-loop-func
+              ref={(el) => {
+                if (el) inputRefs.current.push(el);
+              }}
+            />
+          );
+      } else {
+        cells.push(
+          <Cell
+            x={x}
+            y={y}
+            key={x * 10 + y}
+            state={0}
+            isHuman={isHuman}
+            // eslint-disable-next-line no-loop-func
+            ref={(el) => {
+              if (el) inputRefs.current.push(el);
+            }}
+          />
+        );
+      }
+    }
+
+  useEffect(() => {
+    ////////// Auto Pick
+    if (turn === false && isHuman) {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
+      } while (map[x][y] !== 0);
+      console.log(x, y, map[x][y]);
+      inputRefs.current[x * 10 + y].click();
+    }
+  }, [turn, isHuman, map]);
 
   return (
     <div>
@@ -160,68 +264,8 @@ const Board = (props: Props) => {
         ref={board}
         onClick={() => handleClickOnBoard()}
       >
-        {posX.map((x: number) => {
-          return posY.map((y: number) => {
-            if (mode) {
-              if (
-                block &&
-                block.filter((e) => e.x === x && e.y === y).length > 0
-              ) {
-                if (block[0].state === true)
-                  return (
-                    <Cell
-                      x={x}
-                      y={y}
-                      key={x * 10 + y}
-                      state={2}
-                      isHuman={isHuman}
-                    />
-                  );
-                else
-                  return (
-                    <Cell
-                      x={x}
-                      y={y}
-                      key={x * 10 + y}
-                      state={3}
-                      isHuman={isHuman}
-                    />
-                  );
-              } else if (
-                secretBlock &&
-                secretBlock.filter((e) => e.x === x && e.y === y).length > 0
-              )
-                return (
-                  <Cell
-                    x={x}
-                    y={y}
-                    key={x * 10 + y}
-                    state={1}
-                    isHuman={isHuman}
-                  />
-                );
-              else
-                return (
-                  <Cell
-                    x={x}
-                    y={y}
-                    key={x * 10 + y}
-                    state={0}
-                    isHuman={isHuman}
-                  />
-                );
-            } else {
-              return (
-                <Cell
-                  x={x}
-                  y={y}
-                  key={x * 10 + y}
-                  state={0}
-                  isHuman={isHuman}
-                />
-              );
-            }
-          });
+        {cells.map((cell) => {
+          return cell;
         })}
       </div>
     </div>

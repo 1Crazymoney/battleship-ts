@@ -8,6 +8,10 @@ export const MyContext = createContext<GlobalContent>({
   setMode: () => {},
   winner: 0,
   setWinner: () => {},
+  turn: true,
+  setTurn: () => {},
+  map: [],
+  setMap: () => {},
 
   humanPositions: [],
   setHumanPositions: () => {},

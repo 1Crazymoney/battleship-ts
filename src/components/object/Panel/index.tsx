@@ -13,7 +13,10 @@ const Panel = () => {
     setReset,
     mode,
     setMode,
+    // map,
+    setMap,
     setWinner,
+    setTurn,
     humanShooted,
     comShooted,
     setHumanShooted,
@@ -27,12 +30,22 @@ const Panel = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    //////////////Reset change
     setHumanShooted([0, 0, 0, 0, 0]);
     setComShooted([0, 0, 0, 0, 0]);
     setComSecretCnt(17);
-  }, [reset, setHumanShooted, setComShooted, setComSecretCnt]);
+    setTurn(true);
+    setMap([]);
+    let m: number[][] = [];
+    for (let i = 0; i < 10; i++) {
+      m[i] = [];
+      for (let j = 0; j < 10; j++) m[i][j] = 0;
+    }
+    setMap(m);
+  }, [reset, setHumanShooted, setComShooted, setComSecretCnt, setTurn, setMap]);
 
   useEffect(() => {
+    //////////check if final
     let humanSum = 0,
       comSum = 0;
     humanShooted.forEach((item) => (humanSum += item));
@@ -41,7 +54,7 @@ const Panel = () => {
       (humanSecretCnt !== 0 && humanSum === humanSecretCnt) ||
       comSum === comSecretCnt
     ) {
-      console.log("finish");
+      // console.log("finish");
       if (humanSum === humanSecretCnt) setWinner(1);
       else setWinner(2);
       setReset(!reset);
@@ -57,6 +70,7 @@ const Panel = () => {
     setReset,
     reset,
   ]);
+
   return (
     <div className="d-flex flex-column justify-content-between mt-10vh">
       <div className="d-flex justify-content-center">

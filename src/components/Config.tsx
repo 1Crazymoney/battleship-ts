@@ -14,10 +14,9 @@ const imgLoad = () => {
   shipsList = importAll(require.context("../assets/ships/", false, /\.(png)$/));
 };
 
-let ships: number[][][] = [];
 let flag: number[][] = [];
 let std: number[] = [];
-const size = [5, 4, 3, 3, 2],
+const size: number[] = [5, 4, 3, 3, 2],
   cnt = 5;
 
 let data = {
@@ -203,9 +202,6 @@ const dirSumwithDesign = (
   return c;
 };
 
-const posX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-const posY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 export {
   MissSmall,
   HitSmall,
@@ -213,8 +209,6 @@ export {
   Miss,
   size,
   cnt,
-  posX,
-  posY,
   data,
   shipsList,
   dirSumwithDesign,

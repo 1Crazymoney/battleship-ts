@@ -6,6 +6,10 @@ export interface GlobalContent {
   setMode: (c: number) => void;
   winner: number;
   setWinner: (c: number) => void;
+  turn: boolean;
+  setTurn: (c: boolean) => void;
+  map: number[][];
+  setMap: (c: number[][]) => void;
 
   humanPositions: pos[][];
   setHumanPositions: (c: pos[][]) => void;

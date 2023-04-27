@@ -10,9 +10,11 @@ import "./App.scss";
 import { pos } from "./components/object/Board/types";
 
 function App() {
-  const [reset, setReset] = useState<boolean>(false);
   const [mode, setMode] = useState<number>(0);
+  const [turn, setTurn] = useState<boolean>(true);
   const [winner, setWinner] = useState<number>(0);
+  const [map, setMap] = useState<number[][]>([]);
+  const [reset, setReset] = useState<boolean>(false);
   const [humanShooted, setHumanShooted] = useState<number[]>([0, 0, 0, 0, 0]);
   const [comShooted, setComShooted] = useState<number[]>([0, 0, 0, 0, 0]);
   const [humanSelected, setHumanSelected] = useState<number>(0);
@@ -25,12 +27,16 @@ function App() {
   return (
     <MyContext.Provider
       value={{
-        reset,
-        setReset,
         mode,
         setMode,
         winner,
         setWinner,
+        turn,
+        setTurn,
+        map,
+        setMap,
+        reset,
+        setReset,
         humanShooted,
         setHumanShooted,
         comShooted,

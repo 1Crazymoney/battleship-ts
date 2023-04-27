@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Props } from "./types";
 import { size, Hit, Miss, MissSmall } from "../../Config";
@@ -6,22 +6,23 @@ import { useGlobalContext } from "../../../contexts/AppContext";
 
 import "./index.scss";
 
-const Cell = (props: Props) => {
-  const { x, y, state, isHuman } = props;
-
-  const [chosen, mdChosen] = useState(0);
-  const [marked, setMarked] = useState(false);
-
+const Cell = (props: Props, ref: React.Ref<HTMLDivElement>): JSX.Element => {
   const {
-    humanShooted,
-    comShooted,
-    setHumanShooted,
-    setComShooted,
     reset,
     mode,
+    turn,
+    map,
+    setTurn,
+    humanShooted,
+    setHumanShooted,
     humanPositions,
     comPositions,
+    comShooted,
+    setComShooted,
   } = useGlobalContext();
+  const { x, y, state, isHuman } = props;
+  const [chosen, mdChosen] = useState(0);
+  const [marked, setMarked] = useState(false);
 
   useEffect(() => {
     mdChosen(0);
@@ -29,34 +30,41 @@ const Cell = (props: Props) => {
   }, [reset]);
 
   const checkShootOrNot = (x: number, y: number) => {
-    if (!marked) {
+    if (!isHuman && !marked && turn) {
       mdChosen(2);
-      if (isHuman)
-        humanPositions.map((item, i) => {
-          return item.map((pos) => {
-            if (pos.x === x && pos.y === y) {
-              mdChosen(1);
-              let std: number[] = humanShooted;
-              if (std[i] < size[i]) std[i]++;
-              setHumanShooted([...std]);
-              setMarked(true);
-            }
-            return true;
-          });
+      setMarked(true);
+      comPositions.map((item, i) => {
+        return item.map((pos) => {
+          if (pos.x === x && pos.y === y) {
+            mdChosen(1);
+            let std: number[] = comShooted;
+            if (std[i] < size[i]) std[i]++;
+            setComShooted([...std]);
+          }
+          return true;
         });
-      else
-        comPositions.map((item, i) => {
-          return item.map((pos) => {
-            if (pos.x === x && pos.y === y) {
-              mdChosen(1);
-              let std: number[] = comShooted;
-              if (std[i] < size[i]) std[i]++;
-              setComShooted([...std]);
-              setMarked(true);
-            }
-            return true;
-          });
+      });
+      setTurn(!turn);
+    }
+
+    if (isHuman && !marked && !turn) {
+      mdChosen(2);
+      setMarked(true);
+      map[x][y] = 2;
+
+      humanPositions.map((item, i) => {
+        return item.map((pos) => {
+          if (pos.x === x && pos.y === y) {
+            mdChosen(1);
+            map[x][y] = 1;
+            let std: number[] = humanShooted;
+            if (std[i] < size[i]) std[i]++;
+            setHumanShooted([...std]);
+          }
+          return true;
         });
+      });
+      setTurn(!turn);
     }
   };
 
@@ -66,6 +74,7 @@ const Cell = (props: Props) => {
       onClick={async () => {
         if (!mode) await checkShootOrNot(x, y);
       }}
+      ref={ref}
     >
       {mode === 1 && state === 1 && (
         <img src={Hit} alt="Hit.png" className="cell-img" />
@@ -86,4 +95,4 @@ const Cell = (props: Props) => {
   );
 };
 
-export default Cell;
+export default React.forwardRef(Cell);

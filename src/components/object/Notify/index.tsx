@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { MissSmall, HitSmall, shipsList } from "../../Config";
 
 import { useGlobalContext } from "../../../contexts/AppContext";
@@ -11,14 +12,19 @@ const Notify = (props: Props) => {
   const {
     humanShooted,
     humanSelected,
-    setHumanSelected,
     comShooted,
     comSelected,
     mode,
+    reset,
+    setHumanSelected,
   } = useGlobalContext();
-  const data = [0, 1, 2, 3, 4];
+  useEffect(() => {
+    ///////////Reset Change
+    setHumanSelected(0);
+  }, [reset, setHumanSelected]);
 
   const handleSelect = (s: number) => {
+    /////////// select left side img
     if (isHuman) setHumanSelected(s);
   };
 
@@ -30,6 +36,7 @@ const Notify = (props: Props) => {
     selected = isHuman ? humanSelected : comSelected;
 
   for (i = 0; i < cnt; i++) {
+    ////////Ships images and tick images
     sign[i] = [];
     for (j = 0; j < shooted[i]; j++)
       sign[i].push(
@@ -60,7 +67,7 @@ const Notify = (props: Props) => {
   }
   return (
     <div>
-      {data.map((i) => {
+      {[0, 1, 2, 3, 4].map((i) => {
         return (
           <div className="h-5vh" key={i}>
             <div onClick={() => handleSelect(i)} className="display-inline">
